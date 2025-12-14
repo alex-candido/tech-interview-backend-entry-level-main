@@ -25,7 +25,7 @@ POST {{baseUrl}}/cart/add_item
 Content-Type: {{contentType}}
 
 {
-  "product_id": 5,
+  "product_id": 2,
   "quantity": 5
 }
 
