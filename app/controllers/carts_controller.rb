@@ -45,36 +45,35 @@ class CartsController < ApplicationController
   end
 
   private
+    def cart_payload(cart)
+      {
+        id: cart.id,
+        products: cart.cart_items.includes(:product).map do |item|
+          {
+            id: item.product.id,
+            name: item.product.name,
+            quantity: item.quantity,
+            unit_price: item.product.unit_price,
+            total_price: item.total_price
+          }
+        end,
+        total_price: cart.total_price
+      }
+    end
 
-  def cart_payload(cart)
-    {
-      id: cart.id,
-      products: cart.cart_items.includes(:product).map do |item|
-        {
-          id: item.product.id,
-          name: item.product.name,
-          quantity: item.quantity,
-          unit_price: item.product.unit_price,
-          total_price: item.total_price
-        }
-      end,
-      total_price: cart.total_price
-    }
-  end
+    def set_product
+      @product = Product.find(cart_params[:product_id])
+    end
 
-  def set_product
-    @product = Product.find(cart_params[:product_id])
-  end
+    def cart_params
+      params.permit(:product_id, :quantity)
+    end
 
-  def cart_params
-    params.permit(:product_id, :quantity)
-  end
+    def record_not_found(exception)
+      render json: { error: exception.message }, status: :not_found
+    end
 
-  def record_not_found(exception)
-    render json: { error: exception.message }, status: :not_found
-  end
-
-  def parameter_missing(exception)
-    render json: { error: exception.message }, status: :bad_request
-  end
+    def parameter_missing(exception)
+      render json: { error: exception.message }, status: :bad_request
+    end
 end
