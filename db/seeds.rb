@@ -12,14 +12,14 @@
 Product.create([
   {
     name: 'Samsung Galaxy S24 Ultra',
-    price: 12999.99
+    unit_price: 12999.99
   },
   {
     name: 'iPhone 15 Pro Max',
-    price: 14999.99
+    unit_price: 14999.99
   },
   {
     name: 'Xiamo Mi 27 Pro Plus Master Ultra',
-    price: 999.99
+    unit_price: 999.99
   }
 ])

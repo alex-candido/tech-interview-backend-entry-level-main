@@ -4,13 +4,13 @@ RSpec.describe "/products", type: :request do
   let(:valid_attributes) {
     {
       name: 'A product',
-      price: 1
+      unit_price: 1
     }
   }
 
   let(:invalid_attributes) {
     {
-      price: -1
+      unit_price: -1
     }
   }
 
@@ -75,7 +75,7 @@ RSpec.describe "/products", type: :request do
       let(:new_attributes) {
         {
           name: new_name,
-          price: new_price
+          unit_price: new_price
         }
       }
 
@@ -85,7 +85,7 @@ RSpec.describe "/products", type: :request do
               params: { product: new_attributes }, headers: valid_headers, as: :json
         product.reload
         expect(product.name).to eq(new_name)
-        expect(product.price).to eq(new_price)
+        expect(product.unit_price).to eq(new_price)
       end
 
       it "renders a JSON response with the product" do
