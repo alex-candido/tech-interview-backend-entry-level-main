@@ -8,7 +8,7 @@ POST {{baseUrl}}/cart
 Content-Type: {{contentType}}
 
 {
-  "product_id": 2,
+  "product_id": 5,
   "quantity": 4
 }
 
@@ -25,13 +25,13 @@ POST {{baseUrl}}/cart/add_item
 Content-Type: {{contentType}}
 
 {
-  "product_id": 3,
-  "quantity": 10
+  "product_id": 5,
+  "quantity": 5
 }
 
 
 ###
 # @name removeItemFromCart
 # Endpoint to remove a product from the cart.
-DELETE {{baseUrl}}/cart/2
+DELETE {{baseUrl}}/cart/7
 Content-Type: {{contentType}}

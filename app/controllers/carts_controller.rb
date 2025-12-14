@@ -26,7 +26,9 @@ class CartsController < ApplicationController
   def update_item
     cart_item = current_cart.update_item_quantity(product: @product, quantity: cart_params[:quantity])
 
-    if cart_item.persisted?
+    if cart_item.nil?
+      render json: { error: "Product not found in cart" }, status: :not_found
+    elsif cart_item.save
       render json: cart_payload(current_cart), status: :ok
     else
       render json: { errors: cart_item.errors.full_messages }, status: :unprocessable_entity
