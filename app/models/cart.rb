@@ -51,4 +51,16 @@ class Cart < ApplicationRecord
 
     cart_item.destroy
   end
+
+  class << self
+    def mark_as_abandoned
+      inactive_carts = where(status: :active).where("updated_at < ?", 3.hours.ago)
+      inactive_carts.update_all(status: :abandoned, abandoned_at: Time.current)
+    end
+
+    def purge_old_abandoned
+      old_abandoned_carts = where(status: :abandoned).where("abandoned_at < ?", 7.days.ago)
+      old_abandoned_carts.destroy_all
+    end
+  end
 end
