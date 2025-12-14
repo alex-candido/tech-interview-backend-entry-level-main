@@ -1,0 +1,43 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+###
+# @name listProducts
+# List all available products.
+GET {{baseUrl}}/products
+
+###
+# @name getProduct
+# Get a single product by its ID.
+GET {{baseUrl}}/products/1
+
+###
+# @name createProduct
+# Create a new product.
+POST {{baseUrl}}/products
+Content-Type: {{contentType}}
+
+{
+  "product": {
+    "name": "New Awesome Gadget",
+    "unit_price": 99.99
+  }
+}
+
+###
+# @name updateProduct
+# Update an existing product by its ID.
+PATCH {{baseUrl}}/products/1
+Content-Type: {{contentType}}
+
+{
+  "product": {
+    "name": "Updated Awesome Gadget",
+    "unit_price": 109.99
+  }
+}
+
+###
+# @name deleteProduct
+# Delete a product by its ID.
+DELETE {{baseUrl}}/products/1

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class CartsController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from ActionController::ParameterMissing, with: :parameter_missing
+
+  before_action :set_product, only: %i[create update_item]
+
   # GET /cart
   def show
     render json: cart_payload(current_cart), status: :ok
@@ -8,40 +13,24 @@ class CartsController < ApplicationController
 
   # POST /cart
   def create
-    product = Product.find_by(id: cart_params[:product_id])
-    if product.nil?
-      return render json: { error: "Product not found" }, status: :not_found
-    end
+    cart_item = current_cart.add_item(product: @product, quantity: cart_params[:quantity])
 
-    cart_item = current_cart.add_item(product: product, quantity: cart_params[:quantity])
-
-    if cart_item.errors.blank?
+    if cart_item.persisted?
       render json: cart_payload(current_cart), status: :created
     else
-      render json: cart_item.errors, status: :unprocessable_entity
+      render json: { errors: cart_item.errors.full_messages }, status: :unprocessable_entity
     end
-  rescue ActionController::ParameterMissing => e
-    render json: { error: e.message }, status: :bad_request
-  rescue ActiveRecord::RecordNotFound => e
-    render json: { error: e.message }, status: :not_found
   end
 
   # POST /cart/add_item
   def update_item
-    product = Product.find_by(id: cart_params[:product_id])
-    if product.nil?
-      return render json: { error: "Product not found" }, status: :not_found
-    end
+    cart_item = current_cart.update_item_quantity(product: @product, quantity: cart_params[:quantity])
 
-    cart_item = current_cart.update_item_quantity(product: product, quantity: cart_params[:quantity])
-
-    if cart_item.errors.blank?
+    if cart_item.persisted?
       render json: cart_payload(current_cart), status: :ok
     else
-      render json: cart_item.errors, status: :unprocessable_entity
+      render json: { errors: cart_item.errors.full_messages }, status: :unprocessable_entity
     end
-  rescue ActionController::ParameterMissing => e
-    render json: { error: e.message }, status: :bad_request
   end
 
   # DELETE /cart/:product_id
@@ -54,23 +43,36 @@ class CartsController < ApplicationController
   end
 
   private
-    def cart_params
-      params.permit(:product_id, :quantity)
-    end
 
-    def cart_payload(cart)
-      {
-        id: cart.id,
-        products: cart.cart_items.includes(:product).map do |item|
-          {
-            id: item.product.id,
-            name: item.product.name,
-            quantity: item.quantity,
-            unit_price: item.product.unit_price,
-            total_price: item.total_price
-          }
-        end,
-        total_price: cart.total_price
-      }
-    end
+  def cart_payload(cart)
+    {
+      id: cart.id,
+      products: cart.cart_items.includes(:product).map do |item|
+        {
+          id: item.product.id,
+          name: item.product.name,
+          quantity: item.quantity,
+          unit_price: item.product.unit_price,
+          total_price: item.total_price
+        }
+      end,
+      total_price: cart.total_price
+    }
+  end
+
+  def set_product
+    @product = Product.find(cart_params[:product_id])
+  end
+
+  def cart_params
+    params.permit(:product_id, :quantity)
+  end
+
+  def record_not_found(exception)
+    render json: { error: exception.message }, status: :not_found
+  end
+
+  def parameter_missing(exception)
+    render json: { error: exception.message }, status: :bad_request
+  end
 end

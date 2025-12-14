@@ -12,11 +12,14 @@
 #  updated_at :datetime         not null
 #
 class CartItem < ApplicationRecord
+  after_save :recalculate_cart_total
+  after_destroy :recalculate_cart_total
+
   belongs_to :cart
   belongs_to :product
 
   validates :quantity, numericality: { greater_than: 0 }
-  
+
   def total_price
     product.unit_price * quantity
   end
