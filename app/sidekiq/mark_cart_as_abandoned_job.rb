@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 class MarkCartAsAbandonedJob
   include Sidekiq::Job
+  sidekiq_options retry: false
 
   def perform(*args)
-    # TODO Impletemente um Job para gerenciar, marcar como abandonado. E remover carrinhos sem interação. 
+    Cart.mark_as_abandoned
+    Cart.purge_old_abandoned
   end
 end
