@@ -1,4 +1,6 @@
-require 'sidekiq/web'
+# frozen_string_literal: true
+
+require "sidekiq/web"
 
 Rails.application.routes.draw do
   resource :cart, only: [:show, :create] do
@@ -7,8 +9,8 @@ Rails.application.routes.draw do
   end
 
   resources :products
-  
-  mount Sidekiq::Web => '/sidekiq'
+
+  mount Sidekiq::Web => "/sidekiq"
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "rails/health#show"

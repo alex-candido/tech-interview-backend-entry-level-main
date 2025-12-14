@@ -19,6 +19,7 @@ gem "guard-livereload", require: false
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
+  gem "dotenv-rails"
   gem "rspec-rails", "~> 6.1.0"
   gem "foreman"
   gem "annotate", "~> 3.2"
