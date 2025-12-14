@@ -1,33 +1,58 @@
-version: '3'
+version: '3.8'
 
 services:
-    db:
-        image: postgres:16-alpine
-        environment:
-          - POSTGRES_USER=postgres
-          - POSTGRES_PASSWORD=password
-        ports:
-            - '5432:5432'
-        volumes:
-            - postgres13:/var/lib/postgresql/data
-    redis:
-        image: redis:7.0.15-alpine
-        ports:
-        - '6379:6379'
-        volumes:
-        - redis_data:/data  
-    web:
-        ## TODO
-    test:
-        build: .
-        command: bundle exec rspec
-        volumes:
-            - .:/rails
-        depends_on:
-            - db
-            - redis 
-        environment:
-            - DATABASE_URL: postgresql://postgres:password@db:5432/myapp_test
-            - REDIS_URL: redis://redis:6379/0
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7.0.15-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: ["./bin/rails", "server", "-b", "0.0.0.0"]
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+
+  worker:
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - .:/rails
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+
+  test:
+    build: .
+    command: bundle exec rspec
+    volumes:
+        - .:/rails
+    depends_on:
+        - db
+        - redis 
+    environment:
+        - DATABASE_URL=postgresql://postgres:password@db:5432/store_test
+        - REDIS_URL=redis://redis:6379/0
+
 volumes:
-    postgres13:
+  postgres_data:
+  redis_data:
