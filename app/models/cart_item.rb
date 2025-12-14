@@ -16,4 +16,13 @@ class CartItem < ApplicationRecord
   belongs_to :product
 
   validates :quantity, numericality: { greater_than: 0 }
+  
+  def total_price
+    product.unit_price * quantity
+  end
+
+  private
+    def recalculate_cart_total
+      cart.recalculate_total! if cart.present?
+    end
 end
