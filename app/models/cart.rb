@@ -33,10 +33,10 @@ class Cart < ApplicationRecord
   end
 
   def update_item_quantity(product:, quantity: 1)
-    cart_item = cart_items.find_or_initialize_by(product: product)
-    cart_item.quantity = quantity.to_i
+    cart_item = cart_items.find_by(product: product)
+    return nil unless cart_item
 
-    cart_item.save
+    cart_item.quantity = quantity.to_i
     cart_item
   end
 
