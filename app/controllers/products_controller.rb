@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show update destroy ]
 
@@ -39,13 +41,11 @@ class ProductsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_product
       @product = Product.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def product_params
-      params.require(:product).permit(:name, :price)
+      params.require(:product).permit(:name, :unit_price)
     end
 end
